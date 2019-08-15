@@ -27,8 +27,7 @@ function [m A eigenfaces pr_img] = eigenface_core(database_path)
   V = [];  
   [length_valp unused] = size(valp);
   k = 0;
-  %creare matrice noua fara
-  %vectorii proprii care nu satisfac conditia
+ 
   for i = 1 : length_valp
     if valp(i,i) > 1 
       k++;
