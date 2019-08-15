@@ -1,4 +1,7 @@
-% 315CB_Ghiculescu_Alexandru
+% This function returns a matrix resulted from
+% the SVD process.
+
+
 function A_k = task1(image, k)
 
   % read matrix   
