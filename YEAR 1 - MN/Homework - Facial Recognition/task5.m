@@ -1,4 +1,9 @@
-% 315CB_Ghiculescu_Alexandru
+% This function creates 4 graphics
+%    -singular values;
+%    -information given by the first 'k' singular values;
+%    -the error of approximation;
+%    -the compression rate of data.
+
 function task5(image, k)
   
   % read matrix
