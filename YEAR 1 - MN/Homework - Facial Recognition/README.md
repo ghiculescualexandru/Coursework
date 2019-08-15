@@ -4,4 +4,5 @@ The purpose of this homework was to help students understand what singular value
 
 The graphics in **graphics.pdf** display *singular values, intel given by the first ‘k’ singular values, the error of approximation and the compression rate of data*.
 
-The other 2 main files (**eigenface_core.m**, **face_recognition**) use the SVD process to memorize and learn how a person should look. There is a **dataset** from where images are read and then the program can tell if 2 people from 2 different pictures are whether a match or not. Also, it can state if the image doesn't even have a person displayed.
+The other 2 main files (**eigenface_core.m**, **face_recognition**), along with **task6** folder use the 
+SVD process to memorize and learn how a person should look. There is a **dataset** in the task6 folder from where images are read and then the program can tell if 2 people from 2 different pictures are whether a match or not. Also, it can state if the image doesn't even have a person displayed.
