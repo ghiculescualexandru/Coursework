@@ -2,8 +2,8 @@
 
 The main idea of this homework was building g a database for a cash machine using only generic singly linked lists. The ATM should be able to:
   * manage basic requests(checking balance inquiriy, withdraw money, etc);
-  * administrating accounts(changing first PIN, blocking if necessary, etc);
-  * keeping a history of transactions and actions.
+  * administrate accounts(changing first PIN, blocking if necessary, etc);
+  * keep a history of transactions and actions.
 
 The database structure: 
 * A main list of cards (called LC), containing all cards, divided in sublists (LSC);
