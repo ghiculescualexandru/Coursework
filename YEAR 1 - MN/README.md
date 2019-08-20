@@ -1,4 +1,4 @@
-Numerical Methods Coursework (ACS UPB)
+Numerical Methods and Data Processing Coursework (ACS UPB)
 
 Year I, Semester II (2018-2019)
 
