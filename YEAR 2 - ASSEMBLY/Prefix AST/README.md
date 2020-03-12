@@ -1,13 +1,16 @@
 ----------------------------------------------------------------------------------------------
 --		GHICULESCU ALEXANDRU-IONUT, 325 CB, TEMA 1 IOCLA			    --
+
 ----------------------------------------------------------------------------------------------
         Voi explica codul in ordine, de sus in jos, vorbind despre fiecare
         label si operatie.
+        
 ----------------------------------------------------------------------------------------------
 lin6:   Am utilizat un singur macro, pentru inmultirea unui registru cu 10. Dintr-un
         anume motiv, nu puteam sa folosesc "imul" cu un registru in care am pus anterior
         numarul 10, asadar am optat pentru o shiftare la stanga cu 3, adica inmultire cu 
         8, iar apoi doua adunari succesive.
+        
 ----------------------------------------------------------------------------------------------
 lin:12  "readNode" este functia ce mai intai verifica daca informatia din nod este operand
         sau operator. 
@@ -35,6 +38,7 @@ lin:38  String-ul este convertit in integer astfel:
 ----------------------------------------------------------------------------------------------
 lin:80  "isOp" este label-ul care pune pe stiva operatorul (-,+,*,/) cand acesta este citit
         fie din "readNode", fie din "minusOp".
+        
 ----------------------------------------------------------------------------------------------
 lin:83  "traverse" parcurge arborele in preordine (root-left-right) astfel:
           - in registrul EAX pune nodul curent, ce se afla pe stiva, iar apoi in registrul
@@ -58,5 +62,6 @@ lin:83  "traverse" parcurge arborele in preordine (root-left-right) astfel:
 ----------------------------------------------------------------------------------------------
         Rezultatul final se afla in registrul EAX, deci in MAIN doar apelez functia
         "readNode", refac stiva si afisez rezultatul.
+        
 ----------------------------------------------------------------------------------------------
 
