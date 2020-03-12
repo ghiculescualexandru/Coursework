@@ -1,6 +1,6 @@
 # Homework - ATM Database Management #
 
-The main idea of this homework was building g a database for a cash machine using only generic singly linked lists. The ATM should be able to:
+The main idea of this homework was building a database for a cash machine using only generic singly linked lists. The ATM should be able to:
   * manage basic requests(checking balance inquiriy, withdraw money, etc);
   * administrate accounts(changing first PIN, blocking if necessary, etc);
   * keep a history of transactions and actions.
