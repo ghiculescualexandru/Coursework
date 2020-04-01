@@ -9,7 +9,7 @@ int comparator_a(const void *a, const void *b)
 }
 
 /**
- * Description: Comparing function used for ascending qSort.
+ * Description: Comparing function used for descending qSort.
  **/
 int comparator_z(const void *a, const void *b)
 {
