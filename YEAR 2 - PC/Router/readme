@@ -1,0 +1,197 @@
+--------------------------------------------------------------------------------
+	GHICULESCU ALEXANDRU-IONUT, 325CB, TEMA 1 PROTOCOALE DE COMUNCATIE
+--------------------------------------------------------------------------------
+(pentru o citire mai usoara a readme-ului, recomand parcurgerea de jos in sus
+a codului, in paralel cu readme-ul de sus in jos)
+--------------------------------------------------------------------------------
+Functia "main":
+	Initial setez router-ul, adica parsez tabela de routare, aloc memorie pentru
+	tabela arp, creez coada pentru pachete si sortez tabela de routare.
+
+	Primesc pachete, extrag header-ul ether, verific daca este de tip IP sau de
+	tip ARP si apelez functia care manageriaza forwarding, respectiv protocolul
+	ARP.
+--------------------------------------------------------------------------------
+Functia "manage_arp_protocol":
+	Extrag header-ul arp de la pachetul primit, verific daca operatia arp este
+	de tip request sau de top reply. 
+
+	Pentru tipul request, apelez functia in care trimit un arp reply.
+
+	Pentru tipul reply, updatez tabela arp cu noua intrare si verific daca
+	pentru noua intrare exista pachete in coada care pot fi trimise.
+--------------------------------------------------------------------------------
+Functia "manage_ip_forwarding":
+	Extrag header-ul ip de la pachetul primit si verific daca acesta este
+	destinat router-ului. Daca este destinat router-ului, apelez functia de 
+	"manage_echo_request."
+
+	Verific checksum-ul pentru ip header. Daca este gresit, returnez LOST.
+
+	Verific daca pachetul este time exceeded. Daca este, trimit un icmp reply
+	cu mesajul TIME_EXCEEDED si returnez LOST.
+
+	Interoghez tabela de routare, iar daca nu exista o ruta catre destinatie,
+	trimit un icmp reply cu mesajul DESTINATION_UNREACHABLE, returnez LOST.
+
+	Scad ttl, refac updatatez checksum-ul.
+
+	Interoghez tabela arp, iar daca nu exista inca un host, trimit un arp 
+	request si pun pachetul curent in coada. Returnez HOLD.
+
+	Setez destinatia cu mac-ul entry-ului si trimit pachetul, returnez SENT.
+--------------------------------------------------------------------------------
+Functia "manage_echo_request":
+	Verific daca protocolul din header-ul ip este de tip ICMP. Daca este,
+	extrag header-ul icmp si verific daca tipul acestuia este ECHO, trimit un
+	icmp reply cu mesajul ECHO_REPLY, returnez SENT.
+
+	Altfel, returnez LOST.
+--------------------------------------------------------------------------------
+Functia "send_waiting_packet":
+	Retin ultima intrare din tabela arp, deoarece aceasta este cea mai noua si
+	doar pentru ea pot exista pachete netrimise in coada. 
+
+	Merg prin coada cu pachete si verific daca destinatia fiecarui pachet este
+	comuna cu ip-ul ultimei intrari din tabela arp. Daca este, pun in destinatia
+	din headerul ether al pachetului mac-ul ultimei intrari si interoghez
+	tabela de routare. Trimit pachetul.
+
+	Altfel, pun intr-o coada auxiliara cu care refac la final coada initiala.
+--------------------------------------------------------------------------------
+Functia "update_arp_table":
+	Extrag header-ul arp al pachetului si pun mac-ul in mac-ul viitoarei intrari
+	din tabela arp. Apoi construiesc ip-ul si il setez in viitoarea intrarea
+	din tabela arp. De asemenea, actualizez dimensiunea.
+--------------------------------------------------------------------------------
+Functia "put_in_queue":
+	Copiez campurile pachetului ce urmeaza sa fie pus in coada intr-un pachet
+	auxiliar (imi dadea seg fault daca puneam direct). Pun pachet-ul temporar
+	in coada.
+--------------------------------------------------------------------------------
+Functiile "display_arp_table" si "display_rtable":
+	Au scop strict de debugging si afiseaza tabelele de routare si arp.
+--------------------------------------------------------------------------------
+Functia "set_router":
+	Creeaza coada in care vor fi puse pachetele, citeste tabela de routare, 
+	aloca memorie pentru tabela arp si sorteaza tabela de routare.
+--------------------------------------------------------------------------------
+Functia "init_arp_table":
+	Aloca memorie pentru tabela arp, verific daca alocarea a avut loc cu succes
+	si setez dimensiunea pe zero.
+--------------------------------------------------------------------------------
+Functia "read_rtable":
+	Aloc memorie pentru tabela de routare, verific daca alocarea a avut loc cu
+	succes si setez dimensiunea cu zero.
+
+	Deschid fisierul de intrare si citesc fiecare string direct in variabile de
+	un octet. Setez campurile fiecare intrari din tabela de routare folosind
+	functia care converteste o serie de patru octeti intr-un unsigned long. 
+	Interfata se citeste direct in interfata elementului din tabela de routare.
+
+	Actualizez dimensiunea tabelei de routare.
+--------------------------------------------------------------------------------
+Functia "ip_to_dec":
+	Primeste 4 octeti si converteste intr-un decimal de 32 de biti.
+--------------------------------------------------------------------------------
+Functia "send_icmp_reply":
+	Seteaza campurile pentru un pachet de tip icmp reply. Seteaza headere-le
+ 	tinand cont de tipul de reply pe care il trimite si trimite pachetul.
+--------------------------------------------------------------------------------
+Functia "send_arp_request":
+ 	Seteaza campurile pentru un pachet de tip arp request. Seteaza headere-le
+ 	tinand cont de operatia arp si trimite pachetul.
+--------------------------------------------------------------------------------
+Functia "send_arp_reply":
+ 	Seteaza campurile pentru un pachet de tip arp reply. Seteaza headere-le
+ 	tinand cont de operatia arp si trimite pachetul.
+--------------------------------------------------------------------------------
+Functia "set_icmphdr":
+ 	Extrage header-ul icmp din pachetul de reply si seteaza campurile, tinand
+ 	cont de tipul pachetului pe care il trimite.
+--------------------------------------------------------------------------------
+Functia "set_iphdr":
+ 	Extrage headere-le pachetelor de reply si sursa si seteaza campurile. 
+ 	Protocolul este setat ca fiind ICMP iar destinatia reply-ului este sursa
+ 	pachetului sursa, si invers.
+--------------------------------------------------------------------------------
+Functia "set_ether_header":
+ 	Seteaza campurile header-ului ether, destinatia (dhost) a reply-ului este
+ 	sursa (shost) a pachetului sursa si invers. Tipul pe care il trimite este
+ 	acelasi cu tipul pe care il primeste.
+--------------------------------------------------------------------------------
+Functia "set_arphdr_request":
+ 	Extrage header-ul arp al request-ului  si seteaza campurile specifice, 
+ 	tinand cont de operatia arp.
+--------------------------------------------------------------------------------
+Functia "set_arp":
+ 	Extrage headere-le arp pentru pachetul reply si pentru pachetul m.
+ 	Interschimba intre ele sursa si destinatia si tien cont de tipul operatiei
+ 	arp.
+--------------------------------------------------------------------------------
+Functia "set_ethdr_arp_request":
+ 	Extrage header-ul ether al pachetului rqeuest si seteaza campurile, 
+ 	destinatia fiind BroadCast.
+--------------------------------------------------------------------------------
+Functia "set_ethdr_arp":
+ 	Extrage header-ul ether al pachetului request si al pachetului sursa
+ 	si seteaza campurile astfel: destinatia requestu-lui este sursa pachetului
+ 	sursa, iar sursa este interfata mac a router-ului.
+--------------------------------------------------------------------------------
+Functiile "set_arp_reply", "set_arp_request" si "set_icmp_reply":
+ 	Creeaza un nou pachet specific cu len-ul si interfetele specifice.
+--------------------------------------------------------------------------------
+Functia "sort_table":
+	Sorteaza tabela de routare, folosind merge sort. Elementele din tabela sunt
+	sortate astfel: crescator dupa prefix, iar in caz de egalitate intre
+	prefixe, sortarea se face crescator dupa masca. Acest lucru ne ajuta la 
+	cautarea binara, deoarece cautam intrarea in tabela care nu doar ca va
+	corespunde formulei dintre un prefix si ip-ul destinatie, dar va avea si 
+	masca cea mai "mare".
+--------------------------------------------------------------------------------
+Functia "get_arp_entry":
+	Itereaza prin tabela arp si returneaza intrarea a carui ip corespunde cu 
+	ip-ul destinatie.
+--------------------------------------------------------------------------------
+Functia "lookup_rtable":
+	Denumita si get_best_route, realizeaza o cautare binara in tabela de routare
+	dupa cum urmeaza (fie formula ip_dest & prefix[i] ? mask[i], unde i este
+	indexul elementului pe care il verific din tabela de routare):
+		- pentru "<", continuam cautarea binara in jumatatea inferioara (stanga)
+		- pentru ">", continuam cautarea binara in jumatatea superioara (dreapta)
+		- pentru "==", nu stim daca cea mai buna ruta este cea curenta, asa ca
+		vom continua cautarea in dreapta, cat timp formula este respectata.
+
+	Functia intoarce un pointer catre intrarea cea mai buna din tabela de 
+	routare, NULL altfel.
+
+	Aceasta cautare binara are sens, deoarece sortarea anterioara a fost facuta
+	crescator dupa prefix si masca. Astfel, odata ce am gasit un prefix
+	corespunzator, singurele intrari mai bune s-ar afla in dreapta, unde masca
+	ar fi mai "mare".
+
+	Functia auxiliara "valid_dest" verifica daca rezultatul formulei de mai sus
+	este "==" si intoarce 1, 0 in rest.
+--------------------------------------------------------------------------------
+Obs: 1) Atat la sortare cat si la cautare binara, am tot jonglat cu ntohl si
+	 	htonl deoarece nu am fost consecvent cand am citit tabela de routare.
+	 	Este greseala mea si mi-o asum. Codul poate deveni dificil de citit insa
+	 	nu am reusit sa ajung la o varianta mai lizibila.
+	 	
+	 2) Nu am implementat bonusul, am folosit functia de checksum din laborator.
+--------------------------------------------------------------------------------
+Declaratii:
+	- variabile globale:
+		- rtable (table de routare)
+		- arptable (table arp)
+		- rtable_size (dimensiune rtable)
+		- arp_table_size (dimensiune arp table)
+	- macro-uri:
+		- SENT =  1 
+		- LOST =  0
+		- HOLD = -1
+		Cu toate ca functiile care manageriaza redirectionarea pachetelor ip sau
+		care implementeaza protocolul ARP nu au nevoie de o valoarea de return,
+		am ales sa folosesc aceste MACRO-uri pentru o intelegere mai usoara a 
+		protocoalelor si pentru un eventual proces de debugging.
+--------------------------------------------------------------------------------
