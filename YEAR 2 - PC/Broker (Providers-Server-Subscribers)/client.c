@@ -12,8 +12,8 @@
 
 fd_set read_fds;	/* File descriptors for select. */
 fd_set tmp_fds;		/* Temporary file descriptor. 	*/
-int fdmax;			/* Max value from read_fds.		*/
-int sockfd;			/* Socket for receiving. 		*/
+int fdmax;		/* Max value from read_fds.	*/
+int sockfd;		/* Socket for receiving. 	*/
 struct sockaddr_in serv_addr; /* Struct for client.	*/
 
 int main(int argc, char *argv[]) {
