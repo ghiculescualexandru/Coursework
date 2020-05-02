@@ -1,0 +1,302 @@
+--------------------------------------------------------------------------------
+	GHICULESCU ALEXANDRU-IONUT, 325CB, TEMA 2 PROTOCOALE DE COMUNCATIE
+--------------------------------------------------------------------------------
+Voi explica pe scurt flow-ul aplicatiei iar apoi voi parcurge ambele surse de
+sus in jos si voi explica fiecare functie.
+(pentru citirea readme-ului a se folosi tab width: 4)
+--------------------------------------------------------------------------------
+				
+	PROVIDERS					SUBSCRIBERS
+
+	udp_client _			   _ tcp_client
+				\			  /
+				 \			 /
+				  \			/
+	udp_client ----	SERVER 	---- tcp_client
+		.		  /			\		.
+		.		 /			 \		.
+		.		/			  \		.
+	udp_client -			   - tcp_client
+
+Pe scurt, dupa cum se observa din schema de mai sus, flow-ul este urmatorul:
+	- un client trimite mesaje de tip TCP catre server pentru a
+	  se abona la provideri
+
+	- un provider trimite mesaje de tip UDP catre server
+		- mesajele contin informatii despre un anumit topic 
+		  in header-ul udp (va fi discutat ulterior)
+
+	- server-ul primeste aceste mesaje si cauta clienti care
+	  sunt abonati la topicurile providerilor apoi trimite mesaje
+	  de tip UDP clientilor
+
+	- un client primeste mesajul de la server si afiseaza in 
+	  in terminal informatia prelucrata
+	  	- clientul se poate abona/dezabona oricand de la un topic
+
+Mai in detaliu, aplicatia functioneaza dupa cum urmeaza:
+	- se porneste server-ul si se seteaza campurile necesare
+	  (se fac bind-urile, listen-urile si se completeaza campurile;
+	  se afiseaza erorile daca exista;
+	  se afiseaza un mesaj de succes daca totul decurge normal;
+	  server-ul asteapta sa primeasca mesaje pe socketii activi si pasivi)
+
+	- clientii tcp se conecteaza si trimit instant un mesaj catre server
+	  cu ID-ul lor
+	  (se fac conectarile necesare si se seteaza campurile;
+	  se afiseaza erorile daca exista;
+	  se afiseaza un mesaj de Welcome si instructiunile pentru input)
+
+	- TCP Pasive (un client tcp se conecteaza)
+	  server-ul primeste mesajul cu ID-ul, verifica daca acest client
+	  este unul nou sau care a mai fost deja conectat in sesiunea curenta
+	  si se afiseaza mesajul corespunzator (New/Reconnected client...);
+	  Client-ul conectat este adaugat in baza de date daca este nou sau
+	  i se updateaza socketul curent daca este un client reconectat 
+	  (va fi discutat ulterior structura pentru un client tcp)
+	  De asemenea, daca clientul este reconectat si are update-uri de
+	  la provideri in coada pentru SF On, ii sunt trimise instant toate 
+	  mesajele stocate.
+
+	- TCP Active (un client tcp trimite un mesaj catre server)
+	  un client tcp trimite un mesaj catre server fie cu "exit",
+	  fie de tip abonare/dezabonare.
+	  mesajul este primit de catre server intr-un header tcp si
+	  este interpretat dupa cum urmeaza:
+	  	- exit: da clear pe socketul curent al clientului deconecatat
+	  			si seteaza socketul clientului pe -1 (va fi discutat)
+	  	- abonare/dezabonare: itereaza prin baza de date pentru clienti
+	  			si prin topicurile clientului dorit si updateaza baza
+	  			de date pentru topicurile clientului 
+	  			+ trimite mesaj de dezabonare incorecta daca e cazul
+	  			(va fi discutat ulterior)
+
+	- UDP Pasive (un provider udp trimite un mesaj catre server)
+	  un client udp trimite un mesaj catre server prin header-ul udp
+	  server-ul face receive si itereaza prin clientii lui cautand
+	  abonamente pentru clienti conectati si pentru clienti deconectati
+	  dar care au SF activi. In functie de caz, trimite mesaje sau 
+	  stocheaza mesaje in coada clientului respectiv.
+
+Am implementat 2 protocoale: peste UDP si TCP, creand anumite headere
+(asemanator protocoalelor IP/ICMP/etc) cu structurile din helpers.h
+
+Header TCP:	
+	---------------------------------------------------------------
+	|	subscribe  | SF  | 				payload					  |
+	---------------------------------------------------------------
+
+	subscribe este pe 4 octeti: 1 - abonare, 0 - dezabonare
+	SF este pe 4 octeti: 1 - SF on, 0 - SF off
+	payload este pe 50 de octeti
+
+Header UDP:
+	---------------------------------------------------------------
+	|	topic  | type  | payload								  |
+	---------------------------------------------------------------
+	|		ip 				| 			  port 					  |
+	---------------------------------------------------------------
+
+	topic este pe 50 de octeti
+	type este un octet - tipul mesajului trimis (0,1,2,3)
+	payload este pe 1500 de octeti
+	ip pe 8 octeti - ip-ul de la provider
+	port pe 2 octeti - port-ul de la provider
+
+De asemenea, am implementat alte 2 structuri: tcp_client si topic
+
+tcp_client:
+	int topic_num - numarul curent de topicuri 	
+	int max_topic_num - numarul maxim de topciuri pentru realocare 
+	int currsock - socketul curent
+	char id[50] - id-ul clientului
+	topic *topics - lista pentru topicuri
+	queue topics_queue	- coada pentru topicuri cu SF On
+
+	Socket-ul curent reprezinta socketul pe care se conecteaza 
+	sau reconecteaza la server clientul. Cand clientul se 
+	deconecteaza, acesta este setat pe -1. Acest lucru previne
+	ca acelasi user (acelasi id) sa se conecteze simultan din
+	2 terminale (in acest caz, al doilea terminal este inchis
+	si se afiseaza un mesaj). De asemenea este folosit pentru 
+	a stoca mesaje de la provideri pentru topicuri cu SF On.
+
+topic:
+	int subscribe -1/0 = subscribe/unsubscribe
+	int SF - 1/0 = store&forward/NO store&forward
+	char name[50]; - numele topicului
+
+--------------------------------------------------------------------------------
+--	server.c --
+
+Functia "main":
+	Seteaza server-ul, aloca memorie pentru baza de date a clientilor,
+	afiseaza un mesaj de succes.
+	Face select si in functie de socket apeleaza functii pentru stdin,
+	pentru socketii pasivi sau activi.
+
+	La iesirea din server, sunt inchisi toti socketii (pasivi si socketii 
+	activi ai clientilor)
+--------------------------------------------------------------------------------
+Functia "set_server":
+	Seteaza pe zero file descriptorii, seteaza socketii pasivi si structura
+	pentru server, face bind-urile si listen-urile necesare si adauga in
+	file descriptori socketii pasivi si stdin. De asemenea, seteaza fdmax.
+--------------------------------------------------------------------------------
+Functia "set_tcp_clients":
+	Seteaza numarul de clienti(variabila globala) pe 0, seteaza numarul maxim
+	de clienti (pentru realocare) si aloca memorie pentru array-ul de clienti.
+--------------------------------------------------------------------------------
+Functia "handle_server_stdin":
+	Citeste de la stdin mesajul si daca este "exit" afiseaza un mesaj la stdout
+	si returneaza 0 (cod EXIT verificat in main). Altfel intoarce 1, adica 
+	serverul functioneaza in continuare.
+--------------------------------------------------------------------------------
+Functia "handle_passive_tcp":
+	Este folosita cand se conecteaza un client. Retine socketul pe care se face
+	accept si dezactiveaza algoritmul NEAGLE. Modifica fdmax daca este cazul si
+	primeste imediat un mesaj de la client cu ID-ul sau. 
+	Itereaza prin clientii curenti si verifica daca a mai fost conectat acest
+	client pentru a ii trimite mesajele stocate in coada. In caz contrar se 
+	adauga noul client si se aloca memorie pentru baza de date a topicurilor.
+
+	De asemenea, se fac verificari pentru doi clienti cu acelasi ID conectati
+	simultan si se inchide si face clear pe socketul conectat gresit si se 
+	fac realocarile si updateurile necesare daca este depasit numarul maxim 
+	de clienti.
+
+	Se afiseaza New/Reconnected client dupa caz.
+--------------------------------------------------------------------------------
+Functia "handle_passive_tcp":
+	Face receive intr-un header udp la care se adauga ip-ul si port-ul 
+	provider-ului udp. Apoi itereaza prin clientii curenti si prin topicurile
+	lor si trimite un mesaj udp catre client in cazul in care acesta este
+	abonat la topicul respectiv si este activi sau stocheaza in coada mesajul
+	in cazul in care clientul este abonat la topicul respectiv cu SF On si 
+	este deconectat (adica are currsock -1).
+--------------------------------------------------------------------------------
+Functia "handle_active_tcp":
+	Itereaza prin clientii curenti si pentru clientul de la care primeste 
+	mesaj face receive si verifica imediat daca este un mesaj de exit sau
+	daca clientul a inchis conexiunea. In acest caz se afiseaza mesaj de 
+	deconectare si se seteaza socketul curent pe -1 (adica client deconectat).
+
+	Altfel verifica daca este mesaj de subscribe sau unsubscribe.
+
+	Subscribe: itereaza prin topicurile clientului cautand daca acel topic
+	exista sau nu in baza sa de date. Daca exista, doar updateaza subscribe si
+	SF. Face acest lucru pentru ca eu am considerat ca daca esti abonat la un
+	topic, poti schimba SF si de asemenea, daca ai fost dezabonat te poti abona
+	din nou. De aceea, pentru cazul unusbscribe, nu sterg din baza de date
+	topicul la care se dezaboneaz clientul. Asa am decis eu functionalitatea 
+	programului (aceasta poate fi schimbata dupa caz).
+
+	Unsubscribe: itereaza prin topicurile clientului cautand daca acel topic
+	exista sau nu in baza sa de date. Daca exista se seteaza subscribe pe 0.
+	Daca nu exista, server-ul trimite un mesaj cu payload "notopic" pentru a
+	instiinta client-ul ca incearca sa se dezaboneze de la ceva la care nu
+	a fost niciodata abonat. (tratarea acestui caz este explicata in client).
+--------------------------------------------------------------------------------
+Restul functiilor din server.c:
+	"display_server_connected":
+		afiseaza mesaj de conectare a serverului cu succes.
+	"usage": 
+		afiseaza un mesaj daca parametrii aplicatiei nu sunt respectati.
+	"display_clients"
+		afiseaza intreaga baza de date a clientilor cu toate informatiile
+		necesare.
+
+	+ functii pentru lista si coada preluate exclusive de la scheletul temei 1.
+
+Observatii:
+	1*. In cazul in care se doresc a fi trimise mesaj de eroare catre client, 
+		se foloseste header-ul UDP a carui camp payload este completat conform
+		erorri.
+	2*. Se verifica cu DIE apeluri de functii precum send, recv, bind, listen,
+		accept, recvfrom, etc.
+	3*. Nu exista memory leakuri, deoarece eliberez pentru fiecare client 
+		array-ul de topicuri si coada si eliberez arrayul de client.
+--------------------------------------------------------------------------------
+--	client.c --
+
+Functia "main":
+	Seteaza client-ul cu argumentele necesare primite de la stdin.
+	Trimite instant ID-ul primit de la stdin catre server.
+	Afiseaza un mesaj de welcome si instructiunile necesare pentru input.
+
+	Face select si in functie de socket apeleaza functii pentru socket-ul dorit.
+--------------------------------------------------------------------------------
+Functia "set_client":
+	Seteaza pe zero file descriptorii, seteaza socket-ul si structura
+	pentru server, face connect-ul necesare si adauga in
+	file descriptori socket-ul si stdin. De asemenea, seteaza fdmax.
+--------------------------------------------------------------------------------
+Functia "send_id":
+	Trimite server-ului un mesaj de tip TCP al carui payload este ID-ul
+	clientului.
+--------------------------------------------------------------------------------
+Functia "handle_receive":
+	Primeste un mesaj de la server intr-un header UDP. Verifica daca rezultatul
+	lui recv e 0 si inchide client-ul cu mesajul corespunzator, returnand 0
+	(EXIT). Verifica daca payloadul mesajul este notopic si afiseaza mesajul
+	corespunzator, returnand 1, adica client-ul nu se inchide.
+
+	Altfel verifica tipul mesajului si apeleaza functiile care proceseaza 
+	mesajele in functie de tip.
+--------------------------------------------------------------------------------
+Functiile "handle_type_0/1/2/3":
+	In functie de tip, se extrag datele necesare, se prelucreaza si se afiseaza
+	mesajul corespunzator. De asemeneaza se adauga '\0' la topic si payload
+	in cazul in care acestea trebuie afisate si au fix dimensiunea maxima pentru
+	a evita erori de afisare.
+--------------------------------------------------------------------------------
+Functia "handle_client_stdin":
+	Citeste de la stdin inputul clientului, verifica daca este exit si trimite
+	catre server un mesaj al carui payload este exit, returnand 0. Altfel,
+	verifica pentru eventuale erori de scriere al inputului apeland functii de 
+	afisare a erorilor. Daca totul decurge bine, seteaza campurile ncesare in
+	header-ul TCP si trimite mesajul catre server, returnand 1.
+--------------------------------------------------------------------------------
+Functiile de afisare ale erorilor:
+	Afiseaza la stderr intr-un format friendly erorile de input.
+--------------------------------------------------------------------------------
+Functia "display_welcome":
+	Afiseaza un mesaj de bun venit si instructiuni legate de input.
+--------------------------------------------------------------------------------
+Observatii:
+	1*. In cazul in care se doresc a fi trimise mesaj de exit sau eroare catre
+		server se foloseste header-ul TCP a carui camp payload este 
+		completat conform mesajului dorit.
+	2*. Se verifica cu DIE apeluri de functii precum send, recv, bind, listen,
+		accept, recvfrom, etc.
+--------------------------------------------------------------------------------
+Declaratii:
+	- variabile globale:
+		- server.c
+			-read_fds 	- file descriptor
+			-tmp_fds  	- file descriptor temporar
+			-fdmax	  	- valoare maxima pentru file descriptori
+			-tcp_socket	- socket pasiv tcp
+			-udp_socket	- socket pasiv udp
+			-clients_num- numar curent de clienti pe server
+			-clients_max_size - numar maxim de clienti pe server
+		- client.c
+			-read_fds 	- file descriptor
+			-tmp_fds  	- file descriptor temporar
+			-fdmax	  	- valoare maxima pentru file descriptori
+			-sockfd		- socket pentru recv
+	- macro-uri:
+		- EXIT 			- valoare pentru return
+		- MAX_CLIENTS	- numar maxim de clienti
+		- MAX_TOPIC 	- numar maxim de topicuri
+		- BUFLEN		- size maxim pentru buffer
+		- PAYLOAD_SIZE	- size maxim pentru payloaduri
+		- TOPIC_SIZE	- size maxim pentru topicuri
+		- ID_SIZE		- size maxim pentru id-ul clientilor
+		- SF_SIZE		- size maxim pentru input la SF
+--------------------------------------------------------------------------------
+--	Makefile --
+	-all: compileaza server.c cu -lm pentru pow si client.c executabilele
+		  fiind numite server si subscriber
+	-clean: sterge executabilele
+--------------------------------------------------------------------------------
