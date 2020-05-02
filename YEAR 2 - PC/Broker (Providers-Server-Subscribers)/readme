@@ -9,13 +9,13 @@ sus in jos si voi explica fiecare functie.
 	PROVIDERS					SUBSCRIBERS
 
 	udp_client _			   _ tcp_client
-				\			  /
-				 \			 /
-				  \			/
-	udp_client ----	SERVER 	---- tcp_client
-		.		  /			\		.
-		.		 /			 \		.
-		.		/			  \		.
+		    \			  /
+	             \			 /
+		      \			/
+	udp_client ----	SERVER 	---------    tcp_client
+		.     /			\	.
+		.    /			 \	.
+		.   /			  \	.
 	udp_client -			   - tcp_client
 
 Pe scurt, dupa cum se observa din schema de mai sus, flow-ul este urmatorul:
@@ -83,7 +83,7 @@ Am implementat 2 protocoale: peste UDP si TCP, creand anumite headere
 
 Header TCP:	
 	---------------------------------------------------------------
-	|	subscribe  | SF  | 				payload					  |
+	|	subscribe  | SF  |       payload                      |
 	---------------------------------------------------------------
 
 	subscribe este pe 4 octeti: 1 - abonare, 0 - dezabonare
@@ -92,9 +92,9 @@ Header TCP:
 
 Header UDP:
 	---------------------------------------------------------------
-	|	topic  | type  | payload								  |
+	|	topic  | type  | payload			      |
 	---------------------------------------------------------------
-	|		ip 				| 			  port 					  |
+	|		ip    		| port 		              |
 	---------------------------------------------------------------
 
 	topic este pe 50 de octeti
