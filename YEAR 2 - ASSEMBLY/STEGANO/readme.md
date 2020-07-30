@@ -1,10 +1,11 @@
-------------------------------------------------------------------------------------------------
---		GHICULESCU ALEXANDRU-IONUT, 325 CB, TEMA 1 IOCLA			    					  --
-------------------------------------------------------------------------------------------------
+============================================================================================
+## GHICULESCU ALEXANDRU-IONUT, 325 CB, TEMA 1 IOCLA ##			   
+============================================================================================
         Voi explica codul mai sumar, deoarece in comentarii specific ce se intampla la fiecare
         instructiune. Voi explica cum realizez fiecare TASK conceptual, iar apoi voi detalia.
-------------------------------------------------------------------------------------------------
-                                    TASK 1 - Bruteforce pe XOR
+        
+============================================================================================
+## TASK 1 - Bruteforce pe XOR ##
                   
         Functia realizata intoarce in registrul EAX atat cheia si linia, in primii 32, 
         respectiv ultimii 32 de biti.
@@ -21,7 +22,8 @@
         Functia se afla la lin:3 unde se gasesc si comentariile care indica in detaliu intreg
         procesul, mai exact modul de iteratie, modul de bruteforce cu XOR pentru fiecare numar
         de la 0 la 255, si modul in care gasim linia in functie de gasirea cuvantului 'revient'.
-------------------------------------------------------------------------------------------------
+        
+============================================================================================
                                     TASK 2 - Criptare folosind XOR
                                     
         Functia realizata modifica imaginea primita ca parametru, pe urmatoarea linie
@@ -36,7 +38,8 @@
         
         Functia se afla la lin:173, unde se gasesc si comentariile care indica in detaliu
         ceea ce am rezumat anterior.
-------------------------------------------------------------------------------------------------
+        
+============================================================================================
                                     TASK 3 - Codul Morse
                                     
         Functia realizata afiseaza noua imagine modificata prin Codul Morse.
@@ -46,8 +49,9 @@
         element din matricea imaginii. Fiecare litera o codific cu mai multe simboluri pe care
         le aduug succesiv in matricea primita.
         
-        La final adaug si caracterul 0 dupa mesajul criptat si afisez noua imagine criptata.                           
-------------------------------------------------------------------------------------------------
+        La final adaug si caracterul 0 dupa mesajul criptat si afisez noua imagine criptata.      
+        
+============================================================================================
                                     TASK 4 - LSB 
                                     
         Functia modifica imaginea in functie de un string si un offset primit si metoda 
@@ -67,7 +71,8 @@
         numarul 0, finalul stringului.
        
         Functia afiseaza matricea modificata.
-------------------------------------------------------------------------------------------------
+        
+============================================================================================
                                     TASK 5 - Decriptare LSB
                                     
         Functia afiseaza un mesaj criptat cu metoda prezentata la TASK 4.
@@ -82,4 +87,4 @@
         
         Fiecare litera este afisata in continuarea celeilalte in momentul in care se
         realizeaza 8 iteratii, pentru 8 biti.
-------------------------------------------------------------------------------------------------
+
