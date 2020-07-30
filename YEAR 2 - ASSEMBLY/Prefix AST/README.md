@@ -55,9 +55,8 @@ lin:83  "traverse" parcurge arborele in preordine (root-left-right) astfel:
         In functie de operatie, la label-ul specific utilizez EBX(rezultatul de pe
         partea stanga) si EAX, rezultatul return de pe partea dreapta.
         
-==========================================================================================
+============================================================================================
         Rezultatul final se afla in registrul EAX, deci in MAIN doar apelez functia
         "readNode", refac stiva si afisez rezultatul.
-        
-==============================================================================================
+
 
