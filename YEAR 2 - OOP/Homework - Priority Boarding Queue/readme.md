@@ -1,5 +1,5 @@
 
-GHICULESCU-ALEXANDRU-IONUT, 325-CB,  COURSEWORK 1 - POO
+## GHICULESCU-ALEXANDRU-IONUT, 325-CB,  COURSEWORK 1 - POO ## 
 
 ---------------------------------------------------------------------------------------------------------------------------------
 
@@ -7,9 +7,10 @@ This java program simulates a priority queue for embarking passangers of a
 a flight based on a priority calculated beforehand.
 
 A passanger is an ENTITY. This means a passanger can be either a "Single", 
-a "Family" or a "Group". The classes are defined as it follows:
+a "Family" or a "Group". 
 
-	- "Single" IS A "Entity" and HAS A "Person";
+	The classes are defined as it follows:
+	-"Single" IS A "Entity" and HAS A "Person";
 	- "Family" IS A "Entity" and HAS A array of "Person";
 	- "Group"  IS A "Entity" and HAS A array of "Person";
 
