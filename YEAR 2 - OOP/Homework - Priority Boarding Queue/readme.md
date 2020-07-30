@@ -16,11 +16,11 @@ a "Family" or a "Group".
 
 	The 3 above implements abstract methods defined in ENTITY: getPriority,printID and getCnt.
 	For each:
-		-> getPriority returns the total priority of one Entity(for single,
+		-> getPriority 	returns the total priority of one Entity(for single,
 					  is just its person priority, for family and group, it sums
 					  the priority of all members from its array).
-		-> printID 	  displays the ID of the Entity.
-		-> getCnt     return the number of persons one Entity has(for single 
+		-> printID	displays the ID of the Entity.
+		-> getCnt     	return the number of persons one Entity has(for single 
 					  it just returns 1 and for group or family it returns
 					  the number of members).
 
