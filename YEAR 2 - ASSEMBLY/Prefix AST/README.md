@@ -1,5 +1,5 @@
 ==============================================================================================
-        ## GHICULESCU ALEXANDRU-IONUT, 325 CB, TEMA 1 IOCLA ##
+## GHICULESCU ALEXANDRU-IONUT, 325 CB, TEMA 1 IOCLA ##
 
 ==============================================================================================
         Voi explica codul in ordine, de sus in jos, vorbind despre fiecare
