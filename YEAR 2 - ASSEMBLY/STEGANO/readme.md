@@ -1,9 +1,10 @@
 ============================================================================================
 ## GHICULESCU ALEXANDRU-IONUT, 325 CB, TEMA 1 IOCLA ##			   
 ============================================================================================
-
         Voi explica codul mai sumar, deoarece in comentarii specific ce se intampla la fiecare
         instructiune. Voi explica cum realizez fiecare TASK conceptual, iar apoi voi detalia.
+
+============================================================================================
 
 ## TASK 1 - Bruteforce pe XOR ##
                   
