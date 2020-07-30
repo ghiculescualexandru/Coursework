@@ -1,10 +1,10 @@
 ============================================================================================
 ## GHICULESCU ALEXANDRU-IONUT, 325 CB, TEMA 1 IOCLA ##			   
 ============================================================================================
+
         Voi explica codul mai sumar, deoarece in comentarii specific ce se intampla la fiecare
         instructiune. Voi explica cum realizez fiecare TASK conceptual, iar apoi voi detalia.
-        
-============================================================================================
+
 ## TASK 1 - Bruteforce pe XOR ##
                   
         Functia realizata intoarce in registrul EAX atat cheia si linia, in primii 32, 
@@ -24,7 +24,7 @@
         de la 0 la 255, si modul in care gasim linia in functie de gasirea cuvantului 'revient'.
         
 ============================================================================================
-                                    TASK 2 - Criptare folosind XOR
+## TASK 2 - Criptare folosind XOR ##
                                     
         Functia realizata modifica imaginea primita ca parametru, pe urmatoarea linie
         de la care se afla mesajul primit la TASK 1 adaugand un nou mesaj dorit.
@@ -40,7 +40,7 @@
         ceea ce am rezumat anterior.
         
 ============================================================================================
-                                    TASK 3 - Codul Morse
+## TASK 3 - Codul Morse ##
                                     
         Functia realizata afiseaza noua imagine modificata prin Codul Morse.
         
@@ -52,7 +52,7 @@
         La final adaug si caracterul 0 dupa mesajul criptat si afisez noua imagine criptata.      
         
 ============================================================================================
-                                    TASK 4 - LSB 
+## TASK 4 - LSB ## 
                                     
         Functia modifica imaginea in functie de un string si un offset primit si metoda 
         modificarii celui mai nesemnificativ bit.
@@ -73,7 +73,7 @@
         Functia afiseaza matricea modificata.
         
 ============================================================================================
-                                    TASK 5 - Decriptare LSB
+## TASK 5 - Decriptare LSB ##
                                     
         Functia afiseaza un mesaj criptat cu metoda prezentata la TASK 4.
         
