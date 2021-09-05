@@ -1,0 +1,72 @@
+Ghiculescu Alexandru 335CB
+
+Task 1 - Valgrind / KCachegrind
+
+	Todo 1: 4000
+		real    0m0.009s
+		user    0m0.005s
+		sys     0m0.002s
+
+	Todo 2:
+		- 40000:
+			real    0m0.220s
+			user    0m0.213s
+			sys     0m0.001s
+		- 100000:
+			real    0m1.057s
+			user    0m1.049s
+			sys     0m0.003s
+		- 200000:
+			real    0m3.300s
+			user    0m3.291s
+			sys     0m0.003s
+		- 300000:
+			real    0m6.741s
+			user    0m6.733s
+			sys     0m0.003s
+		- 400000:
+			real    0m11.206s
+			user    0m11.201s
+			sys     0m0.002s
+
+	Todo 4:
+		- 4000:
+			real    0m0.013s
+			user    0m0.291s
+			sys     0m0.055s
+		- 40000:
+			real    0m0.049s
+			user    0m1.012s
+			sys     0m0.104s
+		- 100000:
+			real    0m0.130s
+			user    0m2.630s
+			sys     0m0.206s
+		- 200000:
+			real    0m0.375s
+			user    0m8.040s
+			sys     0m0.075s
+		- 300000:
+			real    0m0.597s
+			user    0m14.944s
+			sys     0m0.061s
+		- 400000:
+			real    0m1.032s
+			user    0m23.622s
+			sys     0m0.097s
+
+Task 2 - Solaris Studio
+	[aghiculescu@hpsl-wn03 ~]$ module avail
+
+	------------------------------------ /usr/share/Modules/modulefiles ------------------------------------
+	dot         module-git  module-info modules     null        use.own
+
+	------------------------------------------- /etc/modulefiles -------------------------------------------
+	compilers/gnu-4.9.4                     libraries/cuda-9.0
+	compilers/gnu-5.4.0                     libraries/cuda-9.1
+	compilers/gnu-6.2.0                     libraries/opencv-3.1.0-gcc-4.9.4
+	compilers/solarisstudio-12.5            libraries/openmpi-2.0.1-gcc-4.9.4
+	libraries/cuda                          libraries/openmpi-2.0.1-gcc-5.4.0
+	libraries/cuda-10.2                     utilities/intel_parallel_studio_xe_2016
+	libraries/cuda-7.5                      utilities/opencl
+	libraries/cuda-8.0

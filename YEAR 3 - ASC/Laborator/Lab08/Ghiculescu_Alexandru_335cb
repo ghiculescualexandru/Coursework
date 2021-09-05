@@ -1,0 +1,13 @@
+GHICULESCU ALEXANDRU, 335CB
+
+output task_gflops.cu:
+	GFLOPS: 5499524.500
+
+output matrix_multiplication_skel.cu:
+	Timing simple implementation... done.
+	Timing optimized implementation... done.
+	Matrix size: 1024x1024
+	Tile size: 16x16
+	Throughput of simple kernel: 566510 GFLOPS
+	Throughput of optimized kernel: 567420 GFLOPS
+	Performance improvement: 1.00161x
